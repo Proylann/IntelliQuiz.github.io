@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IntelliQuiz"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Leaderboards"
+            android:exported="true" />
         <activity
             android:name=".Welcome_Page"
             android:exported="true">
