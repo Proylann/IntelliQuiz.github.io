@@ -8,13 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Big Welcome Text -->
 
-    <!-- Small Text below Welcome -->
-
-    <!-- EditText with rounded corners -->
-
-    <!-- Enter Button -->
 
     <TextView
         android:id="@+id/welcomeTextView"

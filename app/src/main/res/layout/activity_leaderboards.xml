@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:id="@+id/main"
     android:background="@android:color/white"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:padding="16dp">
 
     <LinearLayout
+        android:id="@+id/leaderboards"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <!-- Leaderboard Title -->
         <TextView
-            android:id="@+id/leaderboardTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -25,113 +25,17 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-
+        <!-- Placeholder for dynamic user entries -->
+        <!-- Add a container for user entries -->
         <LinearLayout
+            android:id="@+id/userEntriesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            android:orientation="vertical" />
 
-            <TextView
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:padding="8dp"
-                android:text="Name:"
-                android:textColor="@android:color/black"
-                android:textStyle="bold" />
-
-            <!-- Space -->
-            <Space
-                android:layout_width="50dp"
-                android:layout_height="wrap_content" />
-
-            <!-- Score Title -->
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Score:"
-                android:textColor="@android:color/black"
-                android:padding="8dp"
-                android:textStyle="bold"
-                android:gravity="center" />
-        </LinearLayout>
-
-        <!-- Player Entries (Name + Score) -->
-        <!-- Entry 1 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
-            <!-- Player Name -->
-            <TextView
-                android:layout_width="190dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/boxed_corners"
-                android:gravity="center_vertical"
-                android:padding="8dp"
-                android:text="Player 1"
-                android:textColor="@android:color/black" />
-
-            <!-- Space between Name and Score -->
-            <Space
-                android:layout_width="50dp"
-                android:layout_height="wrap_content" />
-
-            <!-- Player Score -->
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/boxed_corners"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="100"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
-
-        <!-- Entry 2 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
-            <!-- Player Name -->
-            <TextView
-                android:layout_width="192dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/boxed_corners"
-                android:gravity="center_vertical"
-                android:padding="8dp"
-                android:text="Player 2"
-                android:textColor="@android:color/black" />
-
-            <!-- Space between Name and Score -->
-            <Space
-                android:layout_width="50dp"
-                android:layout_height="wrap_content" />
-
-            <!-- Player Score -->
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/boxed_corners"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="95"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
-
+        <!-- Home Button -->
         <Button
-            android:id="@+id/homeBtn"
+            android:id="@+id/homeButton"
             android:layout_width="149dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -141,7 +45,4 @@
             android:textColor="@android:color/black" />
     </LinearLayout>
 
-
-
 </ScrollView>
-
