@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.intelliquiz.Subjects
 
 class MainActivity : AppCompatActivity() {
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var userInp: EditText
     private lateinit var enterButton: Button
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,20 +32,12 @@ class MainActivity : AppCompatActivity() {
         enterButton.setOnClickListener {
             val username = userInp.text.toString().trim()
             if (username.isNotEmpty()) {
-                dbHelper.insertUser(username)
-                Toast.makeText(this, "Username Entered Succesfuly", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, Subjects::class.java)
+                intent.putExtra("USERNAME", username) // Pass username to the next activity
                 startActivity(intent)
-
-
             } else {
-                // Show error message
                 Toast.makeText(this, "Please enter a username", Toast.LENGTH_SHORT).show()
-
             }
         }
-
-
-
     }
 }

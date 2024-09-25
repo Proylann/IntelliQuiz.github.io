@@ -41,25 +41,21 @@ class Leaderboards : AppCompatActivity() {
     }
 
 
-
-
     private fun displayUsers() {
-        val users = dbHelper.getAllUsers() // Retrieve all usernames from the database
+        val users = dbHelper.getAllUsersWithScores() // Retrieve all users and scores
         val userEntriesCount = leaderboardLayout.childCount - 2 // Count of existing user entries
         if (userEntriesCount > 0) {
             leaderboardLayout.removeViewsInLayout(2, userEntriesCount)
         }
 
-        // Add each user to the leaderboard layout
-        for (username in users) {
+        // Add each user and score to the leaderboard layout
+        for ((username, score) in users) {
             val userEntry = TextView(this).apply {
-                text = username
+                text = "$username - Score: $score"
                 textSize = 18f // Set text size
                 setPadding(16, 16, 16, 16) // Add padding
             }
             leaderboardLayout.addView(userEntry) // Add user entry to layout
         }
     }
-
-
 }
