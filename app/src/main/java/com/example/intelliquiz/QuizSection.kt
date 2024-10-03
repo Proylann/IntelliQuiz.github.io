@@ -1,5 +1,6 @@
 package com.example.intelliquiz
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -26,11 +28,15 @@ class QuizSection : AppCompatActivity() {
     private lateinit var answerInput: EditText
     private lateinit var submitButton: Button
     private lateinit var card:LinearLayout
+    private lateinit var nextButton: Button
+    private lateinit var backButton: Button
+    private lateinit var exitButton: Button
     private var score: Int = 0
     private var currentQuestionIndex: Int = 0
     private val maxQuestions = 5
     private val questions = mutableListOf<QuizQuestion>()
     private val askedQuestions = mutableSetOf<String>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +54,12 @@ class QuizSection : AppCompatActivity() {
         answerInput = findViewById(R.id.answerInput)
         submitButton = findViewById(R.id.submitButton)
         card = findViewById(R.id.card)
+        nextButton = findViewById(R.id.nextButton)
+        backButton = findViewById(R.id.backButton)
+        exitButton = findViewById(R.id.exitButton)
+        nextButton.visibility = View.GONE
+        backButton.visibility = View.GONE
+
 
         // Start quiz by fetching the first question
         fetchNextQuestion()
@@ -56,7 +68,36 @@ class QuizSection : AppCompatActivity() {
         submitButton.setOnClickListener {
             val userAnswer = answerInput.text.toString().trim()
             checkAnswer(userAnswer)
+            // Show next/back buttons after answering
+            nextButton.visibility = View.VISIBLE
+            backButton.visibility = if (currentQuestionIndex > 1) View.VISIBLE else View.GONE
 
+        }
+        // Next button click listener
+        nextButton.setOnClickListener {
+            currentQuestionIndex++
+            if (currentQuestionIndex < questions.size) {
+                displayQuestion(questions[currentQuestionIndex])
+            } else {
+                showFinalScore()
+            }
+            // Update button visibility
+            backButton.visibility = if (currentQuestionIndex > 1) View.VISIBLE else View.GONE
+            nextButton.visibility = if (currentQuestionIndex < questions.size - 1) View.VISIBLE else View.GONE
+        }
+        // Back button click listener
+        backButton.setOnClickListener {
+            currentQuestionIndex--
+            displayQuestion(questions[currentQuestionIndex])
+            // Update button visibility
+            backButton.visibility = if (currentQuestionIndex > 1) View.VISIBLE else View.GONE
+            nextButton.visibility = View.VISIBLE
+        }
+        // Exit button click listener
+        exitButton.setOnClickListener {
+            val intent = Intent(this, Welcome_Page::class.java)
+            startActivity(intent)
+            finish() // Optional: Finish QuizSection activity to prevent going back with back button
         }
     }
     private fun fetchNextQuestion() {
