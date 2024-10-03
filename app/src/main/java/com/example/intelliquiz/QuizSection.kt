@@ -1,23 +1,25 @@
 package com.example.intelliquiz
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.google.ai.client.generativeai.GenerativeModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+
+
+import com.example.intelliquiz.api.RetrofitClient
+import com.example.intelliquiz.ApiService
+import com.example.intelliquiz.model.Score
+import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class QuizSection : AppCompatActivity() {
-    private lateinit var dbHelper: DatabaseHelper
     private var username: String = ""
 
     private lateinit var questionTextView: TextView
@@ -25,7 +27,7 @@ class QuizSection : AppCompatActivity() {
     private lateinit var scoreTextView: TextView
     private lateinit var answerInput: EditText
     private lateinit var submitButton: Button
-    private lateinit var card:LinearLayout
+    private lateinit var card: LinearLayout
     private var score: Int = 0
     private var currentQuestionIndex: Int = 0
     private val maxQuestions = 5
@@ -37,9 +39,7 @@ class QuizSection : AppCompatActivity() {
         setContentView(R.layout.activity_quiz_section)
         enableEdgeToEdge()
 
-        // Db Shits
-        dbHelper = DatabaseHelper(this)
-        username = intent.getStringExtra("USERNAME") ?: username
+        username = intent.getStringExtra("USERNAME") ?: ""
 
         // Initialize UI elements
         scoreTextView = findViewById(R.id.score)
@@ -56,20 +56,19 @@ class QuizSection : AppCompatActivity() {
         submitButton.setOnClickListener {
             val userAnswer = answerInput.text.toString().trim()
             checkAnswer(userAnswer)
-
         }
     }
+
     private fun fetchNextQuestion() {
         if (currentQuestionIndex < maxQuestions) {
             val subject = intent.getStringExtra("SUBJECT") ?: "General Knowledge"
             val generativeModel = GenerativeModel(
                 modelName = "gemini-1.5-flash",
-                apiKey = "AIzaSyCXmnTNB43_fd0E8CmhINiYDPftjnzCTjU" // Replace with your actual API key
+                apiKey = "AIzaSyCXmnTNB43_fd0E8CmhINiYDPftjnzCTjU"
             )
 
             CoroutineScope(Dispatchers.IO).launch {
                 var question: QuizQuestion? = null
-                var responseText: String
                 var attemptCount = 0
                 val maxAttempts = 3
 
@@ -80,7 +79,7 @@ class QuizSection : AppCompatActivity() {
 
                         // Call the API to generate content
                         val response = generativeModel.generateContent(prompt)
-                        responseText = response.text.toString()
+                        val responseText = response.text.toString()
 
                         // Parse the AI response
                         question = parseQuestion(responseText)
@@ -88,7 +87,7 @@ class QuizSection : AppCompatActivity() {
                     } catch (e: com.google.ai.client.generativeai.type.ServerException) {
                         if (e.message?.contains("overloaded") == true && attemptCount < maxAttempts) {
                             attemptCount++
-                            kotlinx.coroutines.delay(2000) // Delay before retrying
+                            kotlinx.coroutines.delay(2000)
                         } else {
                             withContext(Dispatchers.Main) {
                                 questionTextView.text = "Service unavailable. Please try again later."
@@ -141,44 +140,26 @@ class QuizSection : AppCompatActivity() {
             'D' to currentQuestion.answers[3]
         )
 
-        // Clean and validate user input
         val userAnswerChar: Char? = userAnswer.uppercase().trim().firstOrNull()
-
-        // Check if the user input is one of the valid options
         if (userAnswerChar !in answerMap.keys) {
             Log.d("InvalidAnswer", "User answer is not valid: $userAnswer")
-            return // Exit if the answer is invalid
+            return
         }
 
-        val userAnswerText = answerMap[userAnswerChar] // Get the mapped answer
-        val correctAnswerText = currentQuestion.correctAnswer // Keep the correct answer as is
+        val userAnswerText = answerMap[userAnswerChar]
+        val correctAnswerText = currentQuestion.correctAnswer
 
-        Log.d("UserAnswer", userAnswerText ?: "None")
-        Log.d("CorrectAnswer", correctAnswerText ?: "None")
-
-        // Strip prefixes and unwanted characters from answers for comparison
         val strippedUserAnswer = userAnswerText?.replace(Regex("Option\\s?\\d+:?|Option\\s?\\d+\\s?-?\\s*|-"), "")?.trim()?.replace("\\s+".toRegex(), "") ?: ""
-        val strippedCorrectAnswer = correctAnswerText?.replace(Regex("Option\\s?\\d+:?|Option\\s?\\d+\\s?-?\\s*|-"), "")?.trim()?.replace("\\s+".toRegex(), "") ?: ""
+        val strippedCorrectAnswer = correctAnswerText.replace(Regex("Option\\s?\\d+:?|Option\\s?\\d+\\s?-?\\s*|-"), "").trim().replace("\\s+".toRegex(), "")
 
-        // Debug comparison
-        Log.d("ComparingAnswers", "User Answer: $strippedUserAnswer vs Correct Answer: $strippedCorrectAnswer")
-
-        // Check if the user's answer matches the correct answer (case insensitive)
         if (strippedUserAnswer.equals(strippedCorrectAnswer, ignoreCase = true)) {
             score++
         }
-
-        // Move to the next question regardless of whether the answer was correct
         currentQuestionIndex++
         fetchNextQuestion()
     }
 
-
-
-
-
     private fun showFinalScore() {
-        // Hide other UI elements and display score
         questionTextView.visibility = TextView.GONE
         choicesTextView.visibility = TextView.GONE
         answerInput.visibility = EditText.GONE
@@ -188,18 +169,37 @@ class QuizSection : AppCompatActivity() {
         scoreTextView.text = "Final Score: $score/$maxQuestions"
         scoreTextView.visibility = TextView.VISIBLE
 
-        if (username.isNotEmpty()) { // Check if username is not empty
-            // Check if the user already exists in the database
-            val existingUser = dbHelper.getUserByUsername(username)
-            if (existingUser != null) {
-                // If the user exists, update their score
-                dbHelper.updateUserScore(username, score)
-            } else {
-                // If the user doesn't exist, insert the user with their score
-                dbHelper.insertUser(username, score)
-            }
+        // Check if username is not empty and score is a valid integer
+        if (username.isNotEmpty()) {
+            submitScoreToApi(username, score)
         } else {
             Log.e("UsernameError", "Username is empty when trying to save score!")
+        }
+    }
+
+    private fun submitScoreToApi(username: String, score: Int) {
+        val apiService = RetrofitClient.apiService
+
+        CoroutineScope(Dispatchers.IO).launch {
+            // Create the Score object
+            val scoreObject = Score(username = username, score = score)
+
+            try {
+                // Submit the score object to the API
+                val response = apiService.postScore(scoreObject)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        Log.d("ScoreSubmission", "Score submitted successfully: $score")
+                    } else {
+                        Log.e("ScoreSubmissionError", "Failed to submit score: ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("ScoreSubmissionError", "Exception occurred while submitting score: ${e.message}")
+                }
+            }
         }
     }
 
@@ -211,8 +211,3 @@ class QuizSection : AppCompatActivity() {
         val answers: List<String>
     )
 }
-
-
-
-
-

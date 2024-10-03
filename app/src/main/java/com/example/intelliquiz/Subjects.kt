@@ -55,10 +55,8 @@ class Subjects: AppCompatActivity() {
         }
 
         randomButton.setOnClickListener {
-            startQuiz("Random questions")
+            startQuiz("Anything")
         }
-
-
 
     }
 
