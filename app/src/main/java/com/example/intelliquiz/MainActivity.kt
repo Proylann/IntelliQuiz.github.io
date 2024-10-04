@@ -57,15 +57,23 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val scores = response.body() ?: emptyList()
                         Log.d("MainActivity", "Fetched ${scores.size} scores")
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Fetched ${scores.size} scores",
-                            Toast.LENGTH_SHORT
-                        ).show()
 
-                        val intent = Intent(this@MainActivity, Subjects::class.java)
-                        intent.putExtra("USERNAME", username)
-                        startActivity(intent)
+                        // Check if username already exists in the fetched scores
+                        val usernameExists = scores.any { it.username == username }
+
+                        if (usernameExists) {
+                            // If username is found, display a message and don't proceed
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Username already exists",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            // If username does not exist, proceed to the Subjects activity
+                            val intent = Intent(this@MainActivity, Subjects::class.java)
+                            intent.putExtra("USERNAME", username)
+                            startActivity(intent)
+                        }
                     } else {
                         Log.e("MainActivity", "Failed to fetch scores. Code: ${response.code()}")
                         Toast.makeText(

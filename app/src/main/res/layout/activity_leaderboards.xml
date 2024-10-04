@@ -8,11 +8,10 @@
     android:padding="16dp">
 
     <LinearLayout
-        android:id="@+id/leaderboards"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
         <!-- Leaderboard Title -->
         <TextView
@@ -25,13 +24,46 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <!-- Placeholder for dynamic user entries -->
-        <!-- Add a container for user entries -->
+        <!-- Progress Bar for loading -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            style="?android:attr/progressBarStyleLarge" />
+
+        <!-- Headers for Username and Score -->
         <LinearLayout
-            android:id="@+id/userEntriesContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Username"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Score"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- User entries will be added dynamically -->
+        <LinearLayout
+            android:id="@+id/leaderboards"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp" />
 
         <!-- Home Button -->
         <Button
@@ -44,5 +76,4 @@
             android:text="HOME"
             android:textColor="@android:color/black" />
     </LinearLayout>
-
 </ScrollView>
