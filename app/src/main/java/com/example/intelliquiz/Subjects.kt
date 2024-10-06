@@ -10,20 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.intelliquiz.QuizSection
 import com.example.intelliquiz.R
 
-class Subjects: AppCompatActivity() {
-    //passing the username para di mawala
+class Subjects : AppCompatActivity() {
+    // Passing the username and difficulty
     private lateinit var username: String
+    private lateinit var difficulty: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_subjects)
 
-        //retrieve usernamee gar
+        // Retrieve username and difficulty
         username = intent.getStringExtra("USERNAME") ?: ""
-
-
-
+        difficulty = intent.getStringExtra("DIFFICULTY") ?: "" // Retrieve difficulty
 
         // Initialize buttons for each subject
         val mathButton: ImageButton = findViewById(R.id.mathButton)
@@ -57,14 +55,13 @@ class Subjects: AppCompatActivity() {
         randomButton.setOnClickListener {
             startQuiz("Anything")
         }
-
     }
 
     private fun startQuiz(subject: String) {
         val intent = Intent(this, QuizSection::class.java)
         intent.putExtra("SUBJECT", subject)
-        intent.putExtra("USERNAME", username) // Pass username to QuizSection
+        intent.putExtra("USERNAME", username)
+        intent.putExtra("DIFFICULTY", difficulty) // Pass the difficulty to QuizSection
         startActivity(intent)
     }
-
 }

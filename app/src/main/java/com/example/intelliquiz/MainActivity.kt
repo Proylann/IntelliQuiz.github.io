@@ -1,54 +1,63 @@
 package com.example.intelliquiz
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.content.Intent
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import com.example.intelliquiz.api.RetrofitClient
 import com.example.intelliquiz.model.Score
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var userInp: EditText
     private lateinit var enterButton: Button
+    private lateinit var difficultySpinner: Spinner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        // Adjust layout for system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
+        // Initialize views
         userInp = findViewById(R.id.userInp)
         enterButton = findViewById(R.id.enterButton)
+        difficultySpinner = findViewById(R.id.difficultySpinner)
 
+        // Set up Spinner with difficulty levels
+        val difficulties = arrayOf("Easy", "Medium", "Difficult")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, difficulties)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        difficultySpinner.adapter = adapter
+
+        // Handle Enter button click
         enterButton.setOnClickListener {
             val username = userInp.text.toString().trim()
+            val selectedDifficulty = difficultySpinner.selectedItem.toString()
             if (username.isNotEmpty()) {
                 // Fetch existing scores from the API
-                fetchScores(username) // Fetch scores when user enters their name
+                fetchScores(username, selectedDifficulty)
             } else {
                 Toast.makeText(this, "Please enter a username", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun fetchScores(username: String) {
+    private fun fetchScores(username: String, difficulty: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response: Response<List<Score>> = RetrofitClient.apiService.getScores()
@@ -72,8 +81,10 @@ class MainActivity : AppCompatActivity() {
                             // If username does not exist, proceed to the Subjects activity
                             val intent = Intent(this@MainActivity, Subjects::class.java)
                             intent.putExtra("USERNAME", username)
+                            intent.putExtra("DIFFICULTY", difficulty)
                             startActivity(intent)
                         }
+
                     } else {
                         Log.e("MainActivity", "Failed to fetch scores. Code: ${response.code()}")
                         Toast.makeText(

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">IntelliQuiz</string>
+    <string-array name="difficulty_levels">
+        <item>Easy</item>
+        <item>Medium</item>
+        <item>Difficult</item>
+    </string-array>
 </resources>
