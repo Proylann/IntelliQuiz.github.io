@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="40dp"
-    android:background="#FAF4F4"
-    android:backgroundTint="#FDFDFD"
+    android:background="#97A6AB"
+    android:backgroundTint="@android:color/system_neutral2_400"
     android:orientation="vertical"
     android:padding="16dp">
 
