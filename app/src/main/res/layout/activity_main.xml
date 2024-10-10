@@ -1,20 +1,22 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/material_dynamic_neutral60"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/welcomeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
-        android:text="Welcome !"
+        android:layout_width="313dp"
+        android:layout_height="73dp"
+        android:layout_marginTop="112dp"
+        android:fontFamily="@font/blue_custard"
+        android:text="WELCOME!"
+        android:paddingTop="10dp"
         android:textColor="@android:color/black"
-        android:textSize="50sp"
+        android:textSize="60sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,13 +26,13 @@
         android:id="@+id/inputPromptTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="72dp"
         android:fontFamily="sans-serif-black"
-        android:text="Input username"
+        android:text="INPUT USERNAME"
         android:textColor="@android:color/background_dark"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/welcomeTextView" />
 
@@ -64,28 +66,19 @@
 
     <Button
         android:id="@+id/enterButton"
-        android:layout_width="228dp"
-        android:layout_height="50dp"
+        android:layout_width="212dp"
+        android:layout_height="59dp"
         android:layout_marginTop="40dp"
         android:background="@drawable/rounded_button"
+        android:fontFamily="@font/blue_custard"
         android:padding="10dp"
-        android:text="Enter"
+        android:text="ENTER"
         android:textColor="@android:color/white"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/difficultySpinner"
         app:layout_constraintWidth_percent="0.8" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="194dp"
-        android:layout_height="56dp"
-        android:text="IntelliQuiz"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        tools:layout_editor_absoluteX="108dp"
-        tools:layout_editor_absoluteY="216dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
