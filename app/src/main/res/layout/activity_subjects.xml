@@ -2,27 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="40dp"
-    android:background="#97A6AB"
-    android:backgroundTint="@android:color/system_neutral2_400"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="#088177"
+    android:backgroundTint="#088177"
     android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
-        android:layout_height="68dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="sans-serif-smallcaps"
+        android:fontFamily="@font/blue_custard"
+        android:paddingTop="15dp"
         android:paddingBottom="24dp"
-        android:text="Choose Subject"
-        android:textSize="35sp"
-        android:textStyle="bold" />
+        android:text="CHOOSE SUBJECT"
+        android:textColor="@color/black"
+        android:textSize="40sp" />
 
     <GridLayout
-        android:layout_width="345dp"
-        android:layout_height="631dp"
+        android:layout_width="358dp"
+        android:layout_height="634dp"
         android:layout_gravity="bottom|center"
         android:layout_marginTop="10dp"
         android:columnCount="2"
@@ -39,16 +40,19 @@
                 android:id="@+id/scienceButton"
                 android:layout_width="163dp"
                 android:layout_height="121dp"
+                android:background="@drawable/boxed_corners"
                 android:contentDescription="Science"
-                android:foreground="@drawable/ic_science"
-                android:src="@drawable/ic_science" />
+                android:foreground="@drawable/ic_science" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/blue_custard"
                 android:gravity="center"
-                android:text="Science" />
+                android:text="SCIENCE"
+
+                android:textColor="#E4D5D5" />
         </LinearLayout>
 
         <LinearLayout
@@ -62,18 +66,20 @@
                 android:id="@+id/geographyButton"
                 android:layout_width="161dp"
                 android:layout_height="121dp"
-                android:background="@drawable/button_border"
+                android:background="@drawable/boxed_corners"
                 android:contentDescription="Geography"
-                android:foreground="@drawable/ic_geography"
-                android:src="@drawable/ic_geography" />
+
+                android:foreground="@drawable/ic_geography" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/button_border"
+                android:fontFamily="@font/blue_custard"
                 android:gravity="center"
-                android:text="Geography" />
+                android:text="GEOGRAPHY"
+                android:textColor="#E4D5D5" />
         </LinearLayout>
 
         <LinearLayout
@@ -87,16 +93,19 @@
                 android:id="@+id/historyButton"
                 android:layout_width="163dp"
                 android:layout_height="121dp"
+                android:background="@drawable/boxed_corners"
                 android:contentDescription="Philippine History"
-                android:foreground="@drawable/ic_history"
-                android:src="@drawable/ic_history" />
+
+                android:foreground="@drawable/ic_history" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/blue_custard"
                 android:gravity="center"
-                android:text="Philippine History" />
+                android:text="PHILIPPINE HISTORY"
+                android:textColor="#E4D5D5" />
         </LinearLayout>
 
         <LinearLayout
@@ -110,22 +119,25 @@
                 android:id="@+id/mathButton"
                 android:layout_width="161dp"
                 android:layout_height="121dp"
+                android:background="@drawable/boxed_corners"
                 android:contentDescription="Math"
-                android:foreground="@drawable/ic_math"
-                android:src="@drawable/ic_math" />
+
+                android:foreground="@drawable/ic_math" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/blue_custard"
                 android:gravity="center"
-                android:text="Math" />
+                android:text="MATHEMATICS"
+                android:textColor="#E4D5D5" />
         </LinearLayout>
 
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="148dp"
             android:layout_margin="8dp"
             android:gravity="center"
             android:orientation="vertical">
@@ -134,16 +146,21 @@
                 android:id="@+id/englishBtn"
                 android:layout_width="161dp"
                 android:layout_height="121dp"
+                android:background="@drawable/boxed_corners"
                 android:contentDescription="Math"
-                android:foreground="@drawable/ic_english"
-                android:src="@drawable/ic_math" />
+
+
+                android:foreground="@drawable/ic_english" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/blue_custard"
                 android:gravity="center"
-                android:text="English Language" />
+                android:text="ENGLISH"
+
+                android:textColor="#E4D5D5" />
         </LinearLayout>
 
 
@@ -158,16 +175,19 @@
                 android:id="@+id/random"
                 android:layout_width="161dp"
                 android:layout_height="121dp"
+                android:background="@drawable/boxed_corners"
                 android:contentDescription="Random Questions"
-                android:foreground="@drawable/ic_random"
-                android:src="@drawable/ic_random" />
+                android:foreground="@drawable/ic_random" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/blue_custard"
                 android:gravity="center"
-                android:text="Random Questions" />
+                android:text="RANDOM QUESTIONS"
+
+                android:textColor="#E4D5D5" />
         </LinearLayout>
 
 

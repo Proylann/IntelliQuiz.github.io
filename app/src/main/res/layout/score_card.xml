@@ -14,6 +14,7 @@
         android:layout_weight="1"
         android:textColor="@android:color/black"
         android:textSize="18sp"
+        android:fontFamily="@font/blue_custard"
         android:textStyle="bold" />
 
     <TextView
@@ -21,5 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
+        android:fontFamily="@font/blue_custard"
         android:textSize="18sp" />
 </LinearLayout>
