@@ -78,6 +78,8 @@
         app:layout_constraintWidth_percent="0.8" />
 
     <TextView
+        android:layout_constraintEnd_toEndOf="parent"
+        android:layout_constraintStart_toStartOf="parent"
         android:id="@+id/textView"
         android:layout_width="194dp"
         android:layout_height="56dp"
