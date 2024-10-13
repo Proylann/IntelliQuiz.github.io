@@ -3,10 +3,7 @@
     <solid android:color="@android:color/transparent"/>
     <stroke
         android:width="2dp"
-
-
-
-        android:color="@android:color/black"/>
+        android:color="@android:color/white"/>
     <!-- Remove the corners tag to make it a box shape -->
     <padding android:left="8dp" android:right="8dp"/>
 </shape>

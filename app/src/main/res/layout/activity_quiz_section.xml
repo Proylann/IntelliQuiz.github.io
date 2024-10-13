@@ -4,14 +4,27 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#088177"
+    android:background="#1A1818"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    >
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins_black"
+        android:text="0 : 00"
+        android:textAlignment="center"
+        android:textColor="#FBFAFA"
+        android:textSize="34sp" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="90dp"
+        app:cardBackgroundColor="#F8F8F8"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
 
@@ -59,11 +72,12 @@
         android:layout_height="59dp"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:backgroundTint="#FF862D"
+        android:backgroundTint="#CE2029"
         android:fontFamily="@font/blue_custard"
         android:text="Submit"
+        android:textColor="#FDFCFC"
+        android:textColorLink="#FFFFFF"
         android:textSize="20sp" />
-
     <TextView
         android:id="@+id/score"
         android:layout_width="match_parent"

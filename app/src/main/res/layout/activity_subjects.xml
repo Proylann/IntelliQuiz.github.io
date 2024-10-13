@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_marginTop="10dp"
-    android:background="#088177"
-    android:backgroundTint="#088177"
+    android:background="#1A1818"
+    android:backgroundTint="#1A1818"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:layout_margin="0dp">
+
 
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="@font/blue_custard"
+        android:fontFamily="@font/roboto"
         android:paddingTop="15dp"
         android:paddingBottom="24dp"
         android:text="CHOOSE SUBJECT"
-        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:textColor="@color/white"
         android:textSize="40sp" />
 
     <GridLayout
-        android:layout_width="358dp"
-        android:layout_height="634dp"
+        android:layout_width="wrap_content"
+        android:layout_height="601dp"
         android:layout_gravity="bottom|center"
         android:layout_marginTop="10dp"
         android:columnCount="2"
@@ -38,9 +42,9 @@
 
             <ImageButton
                 android:id="@+id/scienceButton"
-                android:layout_width="163dp"
+                android:layout_width="150dp"
                 android:layout_height="121dp"
-                android:background="@drawable/boxed_corners"
+                android:background="@drawable/card_background"
                 android:contentDescription="Science"
                 android:foreground="@drawable/ic_science" />
 
@@ -48,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/blue_custard"
+                android:fontFamily="@font/poppins_black"
                 android:gravity="center"
                 android:text="SCIENCE"
 
@@ -64,9 +68,9 @@
 
             <ImageButton
                 android:id="@+id/geographyButton"
-                android:layout_width="161dp"
+                android:layout_width="150dp"
                 android:layout_height="121dp"
-                android:background="@drawable/boxed_corners"
+                android:background="@drawable/card_background"
                 android:contentDescription="Geography"
 
                 android:foreground="@drawable/ic_geography" />
@@ -76,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/button_border"
-                android:fontFamily="@font/blue_custard"
+                android:fontFamily="@font/poppins_black"
                 android:gravity="center"
                 android:text="GEOGRAPHY"
                 android:textColor="#E4D5D5" />
@@ -91,9 +95,9 @@
 
             <ImageButton
                 android:id="@+id/historyButton"
-                android:layout_width="163dp"
+                android:layout_width="150dp"
                 android:layout_height="121dp"
-                android:background="@drawable/boxed_corners"
+                android:background="@drawable/card_background"
                 android:contentDescription="Philippine History"
 
                 android:foreground="@drawable/ic_history" />
@@ -102,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/blue_custard"
+                android:fontFamily="@font/poppins_black"
                 android:gravity="center"
                 android:text="PHILIPPINE HISTORY"
                 android:textColor="#E4D5D5" />
@@ -117,9 +121,9 @@
 
             <ImageButton
                 android:id="@+id/mathButton"
-                android:layout_width="161dp"
+                android:layout_width="150dp"
                 android:layout_height="121dp"
-                android:background="@drawable/boxed_corners"
+                android:background="@drawable/card_background"
                 android:contentDescription="Math"
 
                 android:foreground="@drawable/ic_math" />
@@ -128,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/blue_custard"
+                android:fontFamily="@font/poppins_black"
                 android:gravity="center"
                 android:text="MATHEMATICS"
                 android:textColor="#E4D5D5" />
@@ -144,9 +148,9 @@
 
             <ImageButton
                 android:id="@+id/englishBtn"
-                android:layout_width="161dp"
+                android:layout_width="150dp"
                 android:layout_height="121dp"
-                android:background="@drawable/boxed_corners"
+                android:background="@drawable/card_background"
                 android:contentDescription="Math"
 
 
@@ -156,7 +160,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/blue_custard"
+                android:fontFamily="@font/poppins_black"
                 android:gravity="center"
                 android:text="ENGLISH"
 
@@ -173,9 +177,9 @@
 
             <ImageButton
                 android:id="@+id/random"
-                android:layout_width="161dp"
+                android:layout_width="150dp"
                 android:layout_height="121dp"
-                android:background="@drawable/boxed_corners"
+                android:background="@drawable/card_background"
                 android:contentDescription="Random Questions"
                 android:foreground="@drawable/ic_random" />
 
@@ -183,13 +187,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/blue_custard"
+                android:fontFamily="@font/poppins_black"
                 android:gravity="center"
                 android:text="RANDOM QUESTIONS"
 
                 android:textColor="#E4D5D5" />
+
         </LinearLayout>
-
-
     </GridLayout>
+
 </LinearLayout>
