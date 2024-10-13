@@ -73,14 +73,15 @@
         <!-- Home Button -->
         <Button
             android:id="@+id/homeButton"
-            android:layout_width="149dp"
-            android:layout_height="wrap_content"
+            android:layout_width="214dp"
+            android:layout_height="60dp"
             android:layout_marginTop="24dp"
             android:backgroundTint="#CE2029"
             android:fontFamily="@font/poppins_black"
             android:padding="12dp"
             android:text="HOME"
+            android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="30sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 </ScrollView>
