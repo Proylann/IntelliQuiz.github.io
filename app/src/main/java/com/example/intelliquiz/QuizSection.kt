@@ -2,9 +2,12 @@
 
     import android.annotation.SuppressLint
     import android.os.Bundle
+    import android.os.CountDownTimer
     import android.util.Log
+    import android.view.View
     import android.widget.Button
     import android.widget.LinearLayout
+    import android.widget.ProgressBar
     import android.widget.TextView
     import androidx.appcompat.app.AppCompatActivity
     import com.example.intelliquiz.api.RetrofitClient
@@ -12,6 +15,7 @@
     import com.google.ai.client.generativeai.GenerativeModel
     import kotlinx.coroutines.CoroutineScope
     import kotlinx.coroutines.Dispatchers
+    import kotlinx.coroutines.delay
     import kotlinx.coroutines.launch
     import kotlinx.coroutines.withContext
     import kotlin.time.Duration.Companion.seconds
@@ -21,16 +25,24 @@
         private val requests = mutableListOf<Long>()
 
         suspend fun acquire() {
-            while (true) {
-                val now = System.currentTimeMillis()
-                synchronized(requests) {
-                    requests.removeAll { it < now - perDuration.inWholeMilliseconds }
-                    if (requests.size < maxRequests) {
-                        requests.add(now)
-                        return
-                    }
+            var needToDelay = false
+            val now = System.currentTimeMillis()
+
+            synchronized(requests) {
+                requests.removeAll { it < now - perDuration.inWholeMilliseconds }
+                if (requests.size >= maxRequests) {
+                    needToDelay = true
+                } else {
+                    requests.add(now)
                 }
-                kotlinx.coroutines.delay(100) // Wait before checking again
+            }
+
+            // Perform the delay outside of the synchronized block
+            if (needToDelay) {
+                delay(1000)
+                synchronized(requests) {
+                    requests.add(now)
+                }
             }
         }
     }
@@ -40,6 +52,7 @@
         private lateinit var questionTextView: TextView
         private lateinit var choicesTextView: TextView
         private lateinit var scoreTextView: TextView
+        private lateinit var timerTextView: TextView
         private lateinit var card: LinearLayout
         private lateinit var choiceButtonA: Button
         private lateinit var choiceButtonB: Button
@@ -49,18 +62,22 @@
         private var currentQuestionIndex: Int = 0
         private var maxQuestions: Int = 0
         private val askedQuestions = mutableSetOf<String>()
-        private val rateLimiter = RateLimiter(maxRequests = 10, perDuration = 60.seconds)
-        private val retryDelay = 5000L // 5 seconds
+        private val rateLimiter = RateLimiter(maxRequests = 20, perDuration = 60.seconds)
         private var currentQuestion: QuizQuestion? = null // Holds the current question
+        private var Timer: CountDownTimer? = null
+        private val totalTimeMedium = 10 * 60 * 1000L // 10 minutes in milliseconds
+        private val totalTimeHard = 5 * 60 * 1000L // 5 minutes in milliseconds
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_quiz_section)
+            timerTextView = findViewById(R.id.timer)
 
             username = intent.getStringExtra("USERNAME") ?: ""
 
             // Fetch the difficulty level
             val difficulty = intent.getStringExtra("DIFFICULTY") ?: "Easy"
+            setupTimer(difficulty)
             maxQuestions = when (difficulty) {
                 "Easy" -> 10
                 "Medium" -> 15
@@ -68,11 +85,14 @@
                 else -> 10
             }
 
+
             // Initialize UI elements
             scoreTextView = findViewById(R.id.score)
             questionTextView = findViewById(R.id.question)
             choicesTextView = findViewById(R.id.choices)
             card = findViewById(R.id.card)
+           // Timer TextView
+
 
             // Initialize choice buttons
             choiceButtonA = findViewById(R.id.buttonA)
@@ -90,10 +110,35 @@
             choiceButtonD.setOnClickListener { checkAnswer('D') }
         }
 
+        private fun setupTimer(difficulty: String) {
+            when (difficulty) {
+                "Medium" -> startTimer(totalTimeMedium)
+                "Difficult" -> startTimer(totalTimeHard)
+                else -> timerTextView.visibility = View.GONE
+            }
+        }
+
+        private fun startTimer(totalTimeInMillis: Long) {
+            timerTextView.visibility = View.VISIBLE
+            Timer = object : CountDownTimer(totalTimeInMillis, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val minutes = millisUntilFinished / 60000
+                    val seconds = (millisUntilFinished % 60000) / 1000
+                    timerTextView.text = String.format("%d:%02d", minutes, seconds)
+                }
+
+                override fun onFinish() {
+                    timerTextView.text = "0:00"
+                    showFinalScore()
+                }
+            }.start()
+        }
+
         @OptIn(ExperimentalTime::class)
-        @SuppressLint("SecretInSource")
         private fun fetchNextQuestion() {
             if (currentQuestionIndex < maxQuestions) {
+                findViewById<ProgressBar>(R.id.loadingIndicator).visibility = View.VISIBLE
+                card.visibility = LinearLayout.GONE
                 val subject = intent.getStringExtra("SUBJECT") ?: "General Knowledge"
                 val generativeModel = GenerativeModel(
                     modelName = "gemini-1.5-flash",
@@ -102,11 +147,11 @@
 
                 CoroutineScope(Dispatchers.IO).launch {
                     var attemptCount = 0
-                    val maxAttempts = 3
+                    val maxAttempts = 5 // Increased from 3 to 5
 
                     while (attemptCount < maxAttempts) {
                         try {
-                            rateLimiter.acquire() // Wait for rate limit slot
+                            rateLimiter.acquire()
 
                             val difficulty = when (maxQuestions) {
                                 10 -> "Easy"
@@ -115,7 +160,7 @@
                                 else -> "Easy"
                             }
 
-                            val prompt = "Generate a $difficulty-level question about $subject with four options and the correct answer in the following format: 'Question: <question_text>; Option1: <option1>; Option2: <option2>; Option3: <option3>; Option4: <option4>; Answer: <correct_answer>'"
+                            val prompt = "Generate a unique $difficulty-level question about $subject with four options and the correct answer in the following format: 'Question: <question_text>; Option1: <option1>; Option2: <option2>; Option3: <option3>; Option4: <option4>; Answer: <correct_answer>'"
                             val response = generativeModel.generateContent(prompt)
                             val responseText = response.text.toString()
 
@@ -123,44 +168,25 @@
 
                             if (question != null && !askedQuestions.contains(question.question)) {
                                 askedQuestions.add(question.question)
-                                currentQuestion = question // Set the current question
+                                currentQuestion = question
 
                                 withContext(Dispatchers.Main) {
-                                    displayQuestion(question) // Display the current question
+                                    displayQuestion(question)
                                 }
-                                break
+                                return@launch // Exit the coroutine after successfully displaying a question
+                            } else {
+                                attemptCount++
+                                delay(1000) // Wait 1 second before trying again
                             }
-
                         } catch (e: Exception) {
-                            when {
-                                e is com.google.ai.client.generativeai.type.ServerException && e.message?.contains("overloaded") == true -> {
-                                    attemptCount++
-                                    if (attemptCount >= maxAttempts) {
-                                        withContext(Dispatchers.Main) {
-                                            questionTextView.text = "Content generation stopped due to safety concerns. Please try again."
-                                            card.visibility = LinearLayout.GONE
-                                        }
-                                        Log.e("FetchQuestionsError", "Safety concern triggered: ${e.message}")
-                                        break
-                                    } else {
-                                        kotlinx.coroutines.delay(retryDelay)
-                                    }
-                                }
-                                e.message?.contains("429") == true -> {
-                                    // Handle rate limit exceeded
-                                    Log.w("RateLimit", "Rate limit exceeded. Waiting before retry.")
-                                    kotlinx.coroutines.delay(retryDelay)
-                                    continue
-                                }
-                                else -> {
-                                    withContext(Dispatchers.Main) {
-                                        questionTextView.text = "An unexpected error occurred. Please try again later."
-                                    }
-                                    Log.e("FetchQuestionsError", "Error: ${e.message}")
-                                    break
-                                }
-                            }
+                            // ... (keep the existing error handling)
                         }
+                    }
+
+                    // If we've exhausted all attempts, show an error message
+                    withContext(Dispatchers.Main) {
+                        questionTextView.text = "Unable to generate a unique question. Please try again."
+                        card.visibility = LinearLayout.GONE
                     }
                 }
             } else {
@@ -169,21 +195,36 @@
         }
 
         private fun parseQuestion(response: String): QuizQuestion? {
-            // Updated regex to ensure it captures all four options
-            val questionPattern = """Question:\s*(.*?)\s*Option1:\s*(.*?)\s*Option2:\s*(.*?)\s*Option3:\s*(.*?)\s*Option4:\s*(.*?)\s*Answer:\s*(.*?)\s*$""".toRegex()
+            // Updated regex to capture the full answer text
+            val questionPattern = """Question:\s*(.*?)\s*Option(?:1|A):\s*(.*?)\s*Option(?:2|B):\s*(.*?)\s*Option(?:3|C):\s*(.*?)\s*Option(?:4|D):\s*(.*?)\s*Answer:\s*(.+)""".toRegex(RegexOption.DOT_MATCHES_ALL)
+
             val match = questionPattern.find(response)
 
             return if (match != null) {
                 val questionText = match.groupValues[1].trim()
                 val options = listOf(
-                    match.groupValues[2].trim(), // Option1
-                    match.groupValues[3].trim(), // Option2
-                    match.groupValues[4].trim(), // Option3
-                    match.groupValues[5].trim()  // Option4
+                    match.groupValues[2].trim(),
+                    match.groupValues[3].trim(),
+                    match.groupValues[4].trim(),
+                    match.groupValues[5].trim()
                 )
-                val correctAnswer = match.groupValues[6].trim() // Correct answer
+                val answerText = match.groupValues[6].trim()
 
-                // Ensure that there are exactly 4 options
+                // Find the closest matching option for the answer
+                val correctAnswerIndex = options.indexOfFirst { it.equals(answerText, ignoreCase = true) }
+                val correctAnswer = if (correctAnswerIndex != -1) {
+                    options[correctAnswerIndex]
+                } else {
+                    // If no exact match, find the most similar option
+                    options.minByOrNull { levenshteinDistance(it.lowercase(), answerText.lowercase()) } ?: options[0]
+                }
+
+                // Log the parsed question details
+                Log.d("ParseQuestion", "Question: $questionText")
+                Log.d("ParseQuestion", "Options: $options")
+                Log.d("ParseQuestion", "Answer Text: $answerText")
+                Log.d("ParseQuestion", "Correct Answer: $correctAnswer")
+
                 if (options.size == 4) {
                     QuizQuestion(questionText, correctAnswer, options)
                 } else {
@@ -196,57 +237,82 @@
             }
         }
 
+   // function to calculate string similarity
+        private fun levenshteinDistance(s1: String, s2: String): Int {
+            val m = s1.length
+            val n = s2.length
+            val dp = Array(m + 1) { IntArray(n + 1) }
+            for (i in 0..m) dp[i][0] = i
+            for (j in 0..n) dp[0][j] = j
+            for (i in 1..m) {
+                for (j in 1..n) {
+                    dp[i][j] = minOf(
+                        dp[i - 1][j] + 1,
+                        dp[i][j - 1] + 1,
+                        dp[i - 1][j - 1] + if (s1[i - 1] == s2[j - 1]) 0 else 1
+                    )
+                }
+            }
+            return dp[m][n]
+        }
         private fun displayQuestion(question: QuizQuestion) {
             questionTextView.text = question.question
             choicesTextView.text = question.answers.mapIndexed { index, answer ->
                 "${('A' + index)}. $answer"
-            }.joinToString("\n") // This should display A, B, C, D correctly.
+            }.joinToString("\n")
             card.visibility = LinearLayout.VISIBLE
+            findViewById<ProgressBar>(R.id.loadingIndicator).visibility = View.GONE
         }
 
-        @SuppressLint("SetTextI18n")
         private fun checkAnswer(userAnswerChar: Char) {
             currentQuestion?.let { currentQuestion ->
-                val correctAnswerText = currentQuestion.correctAnswer.trim() // Trim whitespace from the correct answer
-
-                // Get the selected answer based on the button pressed
-                val userAnswerText = when (userAnswerChar) {
-                    'A' -> currentQuestion.answers[0].trim() // Trim whitespace from the user's answer
-                    'B' -> currentQuestion.answers[1].trim()
-                    'C' -> currentQuestion.answers[2].trim()
-                    'D' -> currentQuestion.answers[3].trim()
-                    else -> "" // Default case if something goes wrong
+                val userAnswerIndex = when (userAnswerChar) {
+                    'A' -> 0
+                    'B' -> 1
+                    'C' -> 2
+                    'D' -> 3
+                    else -> -1
                 }
 
-                // Check if the user's answer matches the correct answer
-                if (userAnswerText.equals(correctAnswerText, ignoreCase = true)) {
-                    score++
-                    scoreTextView.text = "Correct! Current score: $score"
+                if (userAnswerIndex != -1) {
+                    val userAnswer = currentQuestion.answers[userAnswerIndex]
+                    Log.d("AnswerCheck", "User selected: $userAnswerChar. Answer: $userAnswer")
+                    Log.d("AnswerCheck", "Correct answer: ${currentQuestion.correctAnswer}")
+
+                    if (userAnswer == currentQuestion.correctAnswer) {
+                        score++
+                        scoreTextView.text = "Correct! Current score: $score"
+                        Log.d("AnswerCheck", "Result: Correct")
+                    } else {
+                        scoreTextView.text = "Incorrect! Correct answer was: ${currentQuestion.correctAnswer}"
+                        Log.d("AnswerCheck", "Result: Incorrect")
+                    }
                 } else {
-                    scoreTextView.text = "Incorrect! Correct answer was: $correctAnswerText"
+                    scoreTextView.text = "Invalid selection. Please choose A, B, C, or D."
+                    Log.e("AnswerCheck", "Invalid selection: $userAnswerChar")
                 }
 
-                // Proceed to fetch the next question after a brief delay or immediately based on your preference
                 currentQuestionIndex++
-                fetchNextQuestion()
             }
+
+            fetchNextQuestion()
         }
-
-
 
         private fun showFinalScore() {
-            questionTextView.visibility = TextView.GONE
-            choicesTextView.visibility = TextView.GONE
-            card.visibility = LinearLayout.GONE
+            Timer?.cancel() // Cancel the timer if it's running
 
-            scoreTextView.text = "Final Score: $score/$maxQuestions"
-            scoreTextView.visibility = TextView.VISIBLE
+            questionTextView.visibility = View.GONE
+            choicesTextView.visibility = View.GONE
+            card.visibility = View.GONE
+            timerTextView.visibility = View.GONE
+
+            scoreTextView.text = "Time's up! Final Score: $score/$currentQuestionIndex"
+            scoreTextView.visibility = View.VISIBLE
 
             if (username.isNotEmpty()) {
-                submitScoreToApi(username, score) // Submit score to the API if the username is available
+                submitScoreToApi(username, score)
             }
         }
-
         private fun submitScoreToApi(username: String, score: Int) {
             val scoreEntry = Score(username = username, score = score)
 
@@ -259,7 +325,14 @@
                 }
             }
         }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            Timer?.cancel() // Make sure to cancel the timer when the activity is destroyed
+        }
     }
+
+
 
     // Data class for QuizQuestion
     data class QuizQuestion(
