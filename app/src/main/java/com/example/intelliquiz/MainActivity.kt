@@ -78,11 +78,8 @@ class MainActivity : AppCompatActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            // If username does not exist, proceed to the Subjects activity
-                            val intent = Intent(this@MainActivity, Subjects::class.java)
-                            intent.putExtra("USERNAME", username)
-                            intent.putExtra("DIFFICULTY", difficulty)
-                            startActivity(intent)
+                            // Post new score with difficulty to the API
+                            saveNewScore(username, difficulty)
                         }
 
                     } else {
@@ -103,4 +100,37 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-}
+
+    private fun saveNewScore(username: String, difficulty: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val newScore = Score(username = username, score = 0, difficulty = difficulty)
+
+                val response = RetrofitClient.apiService.postScore(newScore)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        // Proceed to Subjects activity after saving the score
+                        val intent = Intent(this@MainActivity, Subjects::class.java)
+                        intent.putExtra("USERNAME", username)
+                        intent.putExtra("DIFFICULTY", difficulty)
+                        startActivity(intent)
+                    } else {
+                        Log.e("MainActivity", "Failed to save score. Code: ${response.code()}")
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Failed to save score: ${response.message()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (t: Throwable) {
+                withContext(Dispatchers.Main) {
+                    Log.e("MainActivity", "Network Error: ${t.message}")
+                    Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+    }

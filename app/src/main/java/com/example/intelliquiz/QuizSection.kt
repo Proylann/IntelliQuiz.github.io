@@ -1,6 +1,6 @@
     package com.example.intelliquiz
 
-    import android.annotation.SuppressLint
+    import android.content.Intent
     import android.os.Bundle
     import android.os.CountDownTimer
     import android.util.Log
@@ -49,9 +49,9 @@
 
     class QuizSection : AppCompatActivity() {
         private lateinit var username: String
+        private lateinit var difficulty: String
         private lateinit var questionTextView: TextView
         private lateinit var choicesTextView: TextView
-        private lateinit var scoreTextView: TextView
         private lateinit var timerTextView: TextView
         private lateinit var card: LinearLayout
         private lateinit var choiceButtonA: Button
@@ -76,7 +76,7 @@
             username = intent.getStringExtra("USERNAME") ?: ""
 
             // Fetch the difficulty level
-            val difficulty = intent.getStringExtra("DIFFICULTY") ?: "Easy"
+            difficulty = intent.getStringExtra("DIFFICULTY") ?: "Easy"
             setupTimer(difficulty)
             maxQuestions = when (difficulty) {
                 "Easy" -> 10
@@ -87,7 +87,6 @@
 
 
             // Initialize UI elements
-            scoreTextView = findViewById(R.id.score)
             questionTextView = findViewById(R.id.question)
             choicesTextView = findViewById(R.id.choices)
             card = findViewById(R.id.card)
@@ -281,14 +280,11 @@
 
                     if (userAnswer == currentQuestion.correctAnswer) {
                         score++
-                        scoreTextView.text = "Correct! Current score: $score"
                         Log.d("AnswerCheck", "Result: Correct")
                     } else {
-                        scoreTextView.text = "Incorrect! Correct answer was: ${currentQuestion.correctAnswer}"
                         Log.d("AnswerCheck", "Result: Incorrect")
                     }
                 } else {
-                    scoreTextView.text = "Invalid selection. Please choose A, B, C, or D."
                     Log.e("AnswerCheck", "Invalid selection: $userAnswerChar")
                 }
 
@@ -299,22 +295,18 @@
         }
 
         private fun showFinalScore() {
-            Timer?.cancel() // Cancel the timer if it's running
-
-            questionTextView.visibility = View.GONE
-            choicesTextView.visibility = View.GONE
-            card.visibility = View.GONE
-            timerTextView.visibility = View.GONE
-
-            scoreTextView.text = "Time's up! Final Score: $score/$currentQuestionIndex"
-            scoreTextView.visibility = View.VISIBLE
 
             if (username.isNotEmpty()) {
-                submitScoreToApi(username, score)
+                submitScoreToApi(username,  score, difficulty)
+
             }
+            val intent = Intent(this, Congratulatory::class.java)
+            intent.putExtra("FINAL_SCORE", score)
+            startActivity(intent)
         }
-        private fun submitScoreToApi(username: String, score: Int) {
-            val scoreEntry = Score(username = username, score = score)
+
+        private fun submitScoreToApi(username: String, score: Int, difficulty: String) {
+            val scoreEntry = Score(username = username, score = score, difficulty = difficulty)
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
