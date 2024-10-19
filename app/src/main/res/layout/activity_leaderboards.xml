@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="379dp"
             android:layout_height="89dp"
-            android:fontFamily="@font/roboto"
+            android:fontFamily="@font/poppins_black"
             android:gravity="center"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
