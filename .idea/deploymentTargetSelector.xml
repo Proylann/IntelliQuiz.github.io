@@ -2,6 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
+<<<<<<< HEAD
       <SelectionState runConfigName="IntelliQuiz">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2024-10-15T03:15:35.075440Z">
@@ -23,6 +24,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="Congratulatory">
+=======
+      <SelectionState runConfigName="app">
+>>>>>>> 83bdcdb936641e8e10b91767bdef8d026e951d59
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="Leaderboards">
