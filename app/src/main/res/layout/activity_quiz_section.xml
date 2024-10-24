@@ -19,10 +19,22 @@
         android:textColor="#FBFAFA"
         android:textSize="34sp" />
 
+    <TextView
+        android:id="@+id/currentQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/blue_custard"
+        android:text=" "
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="10dp"
         app:cardBackgroundColor="#F8F8F8"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
@@ -60,6 +72,8 @@
                 android:textColor="#090909"
                 android:textSize="16sp" />
         </LinearLayout>
+
+
     </androidx.cardview.widget.CardView>
 
     <!-- Vertical Layout for Buttons -->

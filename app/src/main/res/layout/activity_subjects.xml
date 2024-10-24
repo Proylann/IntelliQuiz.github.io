@@ -12,6 +12,7 @@
     android:layout_margin="0dp">
 
 
+
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
@@ -27,7 +28,7 @@
 
     <GridLayout
         android:layout_width="wrap_content"
-        android:layout_height="601dp"
+        android:layout_height="500dp"
         android:layout_gravity="bottom|center"
         android:layout_marginTop="10dp"
         android:columnCount="2"
@@ -195,5 +196,15 @@
 
         </LinearLayout>
     </GridLayout>
+
+    <Button
+        android:id="@+id/backBtn"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#CE2029"
+        android:text="Back"
+        android:textColor="@android:color/white" />
+
 
 </LinearLayout>

@@ -59,19 +59,22 @@
         private lateinit var choiceButtonC: Button
         private lateinit var choiceButtonD: Button
         private var score: Int = 0
+        private lateinit var questionIndex: TextView //QuizSection
         private var currentQuestionIndex: Int = 0
         private var maxQuestions: Int = 0
         private val askedQuestions = mutableSetOf<String>()
         private val rateLimiter = RateLimiter(maxRequests = 20, perDuration = 60.seconds)
         private var currentQuestion: QuizQuestion? = null // Holds the current question
         private var Timer: CountDownTimer? = null
-        private val totalTimeMedium = 10 * 60 * 1000L // 10 minutes in milliseconds
-        private val totalTimeHard = 5 * 60 * 1000L // 5 minutes in milliseconds
+        private val totalTimeMedium = 5 * 60 * 1000L // 5 minutes in milliseconds
+        private val totalTimeHard = 1 * 60 * 1000L // 1 minute in milliseconds
+
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_quiz_section)
             timerTextView = findViewById(R.id.timer)
+            questionIndex = findViewById(R.id.currentQuestion)
 
             username = intent.getStringExtra("USERNAME") ?: ""
 
@@ -81,17 +84,16 @@
             maxQuestions = when (difficulty) {
                 "Easy" -> 10
                 "Medium" -> 15
-                "Difficult" -> 20
+                "Difficult" -> 50
                 else -> 10
             }
+
 
 
             // Initialize UI elements
             questionTextView = findViewById(R.id.question)
             choicesTextView = findViewById(R.id.choices)
             card = findViewById(R.id.card)
-           // Timer TextView
-
 
             // Initialize choice buttons
             choiceButtonA = findViewById(R.id.buttonA)
@@ -136,6 +138,7 @@
         @OptIn(ExperimentalTime::class)
         private fun fetchNextQuestion() {
             if (currentQuestionIndex < maxQuestions) {
+            //For displaying the current Quesiton Number
                 findViewById<ProgressBar>(R.id.loadingIndicator).visibility = View.VISIBLE
                 card.visibility = LinearLayout.GONE
                 val subject = intent.getStringExtra("SUBJECT") ?: "General Knowledge"
@@ -143,6 +146,14 @@
                     modelName = "gemini-1.5-flash",
                     apiKey = "AIzaSyAwJzzrUWMIPvbWxD-EPeJYO6p6mIxSfB0"
                 )
+
+                if (difficulty == "Easy" || difficulty == "Medium"){
+                    questionIndex.text = "${currentQuestionIndex + 1} / $maxQuestions"
+                } else
+                {
+                    questionIndex.text = "${currentQuestionIndex + 1}"
+                }
+
 
                 CoroutineScope(Dispatchers.IO).launch {
                     var attemptCount = 0
@@ -155,11 +166,11 @@
                             val difficulty = when (maxQuestions) {
                                 10 -> "Easy"
                                 15 -> "Medium"
-                                20 -> "Difficult"
+                                50 -> "mildly difficulty"
                                 else -> "Easy"
                             }
 
-                            val prompt = "Generate a unique $difficulty-level question about $subject with four options and the correct answer in the following format: 'Question: <question_text>; Option1: <option1>; Option2: <option2>; Option3: <option3>; Option4: <option4>; Answer: <correct_answer>'"
+                            val prompt = "Generate a unique $difficulty-level question about $subject while not exceeding 20 words. with four options and the correct answer in the following format: 'Question: <question_text>; Option1: <option1>; Option2: <option2>; Option3: <option3>; Option4: <option4>; Answer: <correct_answer>'"
                             val response = generativeModel.generateContent(prompt)
                             val responseText = response.text.toString()
 
@@ -178,7 +189,6 @@
                                 delay(1000) // Wait 1 second before trying again
                             }
                         } catch (e: Exception) {
-                            // ... (keep the existing error handling)
                         }
                     }
 
@@ -297,24 +307,27 @@
         private fun showFinalScore() {
 
             if (username.isNotEmpty()) {
-                submitScoreToApi(username,  score, difficulty)
-
+                submitScoreToApi(username, score, difficulty)
+                val intent = Intent(this, Congratulatory::class.java)
+                intent.putExtra("FINAL_SCORE", score)
+                startActivity(intent)
             }
-            val intent = Intent(this, Congratulatory::class.java)
-            intent.putExtra("FINAL_SCORE", score)
-            startActivity(intent)
         }
 
         private fun submitScoreToApi(username: String, score: Int, difficulty: String) {
-            val scoreEntry = Score(username = username, score = score, difficulty = difficulty)
+            if (score > 0) { // Only submit scores greater than zero
+                val scoreEntry = Score(username = username, score = score, difficulty = difficulty)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response = RetrofitClient.apiService.postScore(scoreEntry)
-                    Log.d("ScoreSubmission", "Score submitted: ${response.message()}")
-                } catch (e: Exception) {
-                    Log.e("ScoreSubmissionError", "Error submitting score: ${e.message}")
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response = RetrofitClient.apiService.postScore(scoreEntry)
+                        Log.d("ScoreSubmission", "Score submitted: ${response.message()}")
+                    } catch (e: Exception) {
+                        Log.e("ScoreSubmissionError", "Error submitting score: ${e.message}")
+                    }
                 }
+            } else {
+                Log.d("ScoreSubmission", "Score is zero, not submitting.")
             }
         }
 

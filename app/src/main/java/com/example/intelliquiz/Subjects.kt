@@ -14,6 +14,7 @@ class Subjects : AppCompatActivity() {
     // Passing the username and difficulty
     private lateinit var username: String
     private lateinit var difficulty: String
+    private lateinit var backButton:Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,7 @@ class Subjects : AppCompatActivity() {
         val historyButton: ImageButton = findViewById(R.id.historyButton)
         val englishButton: ImageButton = findViewById(R.id.englishBtn)
         val randomButton: ImageButton = findViewById(R.id.random)
+        backButton = findViewById(R.id.backBtn)
 
         // Set click listeners for each subject button
         mathButton.setOnClickListener {
@@ -55,7 +57,16 @@ class Subjects : AppCompatActivity() {
         randomButton.setOnClickListener {
             startQuiz("Anything")
         }
+
+        backButton.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+
+
     }
+
 
     private fun startQuiz(subject: String) {
         val intent = Intent(this, QuizSection::class.java)

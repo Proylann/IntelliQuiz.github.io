@@ -40,8 +40,8 @@ class MainActivity : AppCompatActivity() {
 
         // Set up Spinner with difficulty levels
         val difficulties = arrayOf("Easy", "Medium", "Difficult")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, difficulties)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val adapter = ArrayAdapter(this, R.layout.spinner_items, difficulties)
+        adapter.setDropDownViewResource(R.layout.dropdown_items)
         difficultySpinner.adapter = adapter
 
         // Handle Enter button click
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     private fun fetchScores(username: String, difficulty: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response: Response<List<Score>> = RetrofitClient.apiService.getScores()
+                val response: Response<List<Score>> = RetrofitClient.apiService.getScores(difficulty)
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
